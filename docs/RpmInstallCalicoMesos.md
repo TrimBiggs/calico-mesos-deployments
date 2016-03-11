@@ -1,11 +1,3 @@
-<!--- master only -->
-> ![warning](images/warning.png) This document applies to the HEAD of the calico-mesos-deployments source tree.
->
-> View the calico-mesos-deployments documentation for the latest release [here](https://github.com/projectcalico/calico-mesos-deployments/blob/0.27.0%2B2/README.md).
-<!--- else
-> You are viewing the calico-mesos-deployments documentation for release **release**.
-<!--- end of master only -->
-
 # RPM Installation of Mesos with Calico
 This tutorial shows how to configure a Mesos Agent able to launch tasks networked with calico networking.
 At the completion of this guide, you will have a Mesos Agent ready to launch tasks with their own Calico assigned IP Addresses using the following services and configuration files:

@@ -1,14 +1,6 @@
 # Calico-Mesos Deployments
 This repo provides RPMs for installing Calico Networking for your Mesos Cluster, documentation on how to get up and running, and how to launch calico networked tasks.
 
-<!--- master only -->
-> ![warning](docs/images/warning.png) This document applies to the HEAD of the calico-mesos-deployments source tree.
->
-> View the calico-mesos-deployments documentation for the latest release [here](https://github.com/projectcalico/calico-mesos-deployments/blob/0.27.0%2B2/README.md).
-<!--- else
-> You are viewing the calico-mesos-deployments documentation for release **release**.
-<!--- end of master only -->
-
 We recommend browsing the docs for the [latest release](https://github.com/projectcalico/calico-mesos-deployments/releases/latest).
 
 - For information on Calico, see [projectcalico.org](http://projectcalico.org)
