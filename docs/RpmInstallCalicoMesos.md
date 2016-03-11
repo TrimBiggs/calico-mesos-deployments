@@ -1,7 +1,7 @@
 <!--- master only -->
 > ![warning](images/warning.png) This document applies to the HEAD of the calico-mesos-deployments source tree.
 >
-> View the calico-mesos-deployments documentation for the latest release [here](https://github.com/projectcalico/calico-mesos-deployments/blob/0.26.0%2B1/README.md).
+> View the calico-mesos-deployments documentation for the latest release [here](https://github.com/projectcalico/calico-mesos-deployments/blob/0.27.0%2B2/README.md).
 <!--- else
 > You are viewing the calico-mesos-deployments documentation for release **release**.
 <!--- end of master only -->
@@ -37,14 +37,14 @@ We will now install Mesos, Netmodules, and Calico on an Agent.
 
 2. Install the custom Mesos + Netmodules RPMs:
   ```
-  curl -O https://github.com/projectcalico/calico-mesos-deployments/releases/download/0.27.0%2B1/mesos-netmodules-rpms.tar
+  curl -O https://github.com/projectcalico/calico-mesos-deployments/releases/download/0.27.0%2B2/mesos-netmodules-rpms.tar
   tar -xvf mesos-netmodules-rpms.tar
   sudo yum install -y mesos-netmodules-rpms/*.rpm
   ```
 
 3. Install the Calico-Mesos RPM:
   ```
-  curl -O https://github.com/projectcalico/calico-mesos-deployments/releases/download/0.27.0%2B1/calico-mesos.rpm
+  curl -O https://github.com/projectcalico/calico-mesos-deployments/releases/download/0.27.0%2B2/calico-mesos.rpm
   sudo yum install -y ./calico-mesos.rpm
   ```
 
