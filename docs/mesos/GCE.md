@@ -1,10 +1,12 @@
 <!--- master only -->
-> ![warning](../../images/warning.png) This document applies to the HEAD of the calico-containers source tree.
+> ![warning](../images/warning.png) This document applies to the HEAD of the calico-containers source tree.
 >
 > View the calico-containers documentation for the latest release [here](https://github.com/projectcalico/calico-containers/blob/v0.17.0/README.md).
 <!--- else
 > You are viewing the calico-containers documentation for release **release**.
 <!--- end of master only -->
+
+#TODO: Copied from Kube. Delete since we haven't seen GCE users for mesos (or Rework to use MESOS)
 
 # Deploying Calico and Kubernetes on GCE
 

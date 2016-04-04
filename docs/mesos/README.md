@@ -6,6 +6,8 @@
 > You are viewing the calico-containers documentation for release **release**.
 <!--- end of master only -->
 
+#TODO: Point at new install docs for different containerizers/stars demo/prereqs
+
 # Mesos with Calico networking
 Calico can be used as a network plugin for Mesos both for the Docker
 Containerizer and the Unified Containerizer.

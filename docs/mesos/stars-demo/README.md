@@ -28,9 +28,9 @@ to get started.
 Your cluster should contain the following components.
 
 - Mesos Master Instance - `172.24.197.101`
-	- Etcd - `172.24.197.101:2379`
-	- Marathon - `172.24.197.101:8080`
-	- Marathon Load Balancer - `172.24.197.101`
+    - Etcd - `172.24.197.101:2379`
+    - Marathon - `172.24.197.101:8080`
+    - Marathon Load Balancer - `172.24.197.101`
     - `calico/node` and `calico/node-libnetwork` running in Docker 1.9+
 - Two Mesos Agent Instances - `172.24.197.102`, `172.24.197.103`
     - Calicoctl

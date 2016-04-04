@@ -6,6 +6,8 @@
 > You are viewing the calico-docker documentation for release **release**.
 <!--- end of master only -->
 
+##TODO: This could be removed, we just need to point at the existing profile advanced network policy docs
+
 # Calico Policy for Kubernetes
 Calico supports the v1alpha1 network policy API for Kubernetes.
 > *Note*: The Kubernetes network policy API is currently in alpha and is subject to change. Calico support for this API is in beta and so is also subject to change. 

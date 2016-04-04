@@ -6,6 +6,8 @@
 > You are viewing the calico-docker documentation for release **release**.
 <!--- end of master only -->
 
+## TODO: Copied from Kube.  Delete or add meaningful info (just delete for now I think...)
+
 # Troubleshooting
 This article contains Kubernetes specific troubleshooting advice for Calico.  See also the [main Calico troubleshooting](../../Troubleshooting.md) guide.
 

@@ -6,6 +6,9 @@
 > You are viewing the calico-mesos-deployments documentation for release **release**.
 <!--- end of master only -->
 
+##TODO: Remove this doc since we have one vagrantfile.
+## Alternatively, update info in this doc (Ex. IP's are wrong, installed services have changed, etc) (but we should really delete it...)
+
 # Vagrant Deployed Mesos Cluster with Calico
 This guide will start a running Mesos cluster with Calico Networking using a simple `vagrant up`. 
 It automates the the same installation procedure that is documented in the [RPM Installation Guide](RpmInstallCalicoMesos.md).

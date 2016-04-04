@@ -6,6 +6,8 @@
 > You are viewing the calico-mesos-deployments documentation for release **release**.
 <!--- end of master only -->
 
+##TODO: Is all of this still relevant?  seems like a lot has been duplicated into other docs.
+
 # Using Calico Mesos
 The following information includes application json and information on launching tasks in a Mesos Cluster with Calico.
 
