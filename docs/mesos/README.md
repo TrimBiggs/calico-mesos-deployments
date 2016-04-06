@@ -6,8 +6,6 @@
 > You are viewing the calico-containers documentation for release **release**.
 <!--- end of master only -->
 
-#TODO: Point at new install docs for different containerizers/stars demo/prereqs
-
 # Mesos with Calico networking
 Calico can be used as a network plugin for Mesos both for the Docker
 Containerizer and the Unified Containerizer.
@@ -23,8 +21,8 @@ can be modified using the `calicoctl profile` commands.
 ### Unified Containerizer
 Calico with the Unified Containerizer uses the [Calico Mesos plugin]
 (https://github.com/projectcalico/calico-mesos) to configure
-networking for a Mesos agent that is running [net-modules]
-(https://github.com/mesosphere/net-modules). Networks are
+networking for a Mesos agent that is using the [net-modules network
+isolator](https://github.com/mesosphere/net-modules). Networks are
 specified as net-groups when launching a Mesos task.  A Calico
 profile is automatically created for each net-group (if it doesn't
 already exist), defaulting to allow communication between containers
@@ -57,16 +55,18 @@ following guides:
 
 #### Quick Start a Sample Cluster:
 - [CentOS Vagrant guide](VagrantCentOS.md) will set up a Calico-ready
-Mesos cluster, including the Docker containerizer
+Mesos cluster.  At present this demonstration only supports the Docker
+containerizer and not the Unified Containerizer.
 
 #### Installation guides:
 - [Mesos Cluster Preparation Guide](MesosClusterPreparation.md) provides
-details on how to install the required services for a Calico Mesos cluster.
+details on how to prepare your deployment with required services to
+function as a Calico Mesos cluster.
 - [Docker Containerizer Usage Guide](UsageGuideDockerContainerizer.md)
 explains how to configure and launch tasks with Calico using the
 Docker containerizer.
 - [Manual Calico Mesos Install Guide](ManualInstallCalicoMesos.md) explains
-how to configure a Calico cluster that uses the Mesos unified containerizer.
+how to install Calico for use with the Unified Containerizer.
 
 #### Demonstration guides:
 - [Stars demo](stars-demo/) uses the Docker containerizer to show
