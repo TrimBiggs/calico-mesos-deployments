@@ -46,15 +46,15 @@ Each machine in the cluster must have access to these services.
 
 #### Set up Docker daemon to use etcd as a cluster store
 
-You will need to configure your Docker daemon to point at the etcd cluster store
-as seen in our [Manual Setup guide]
+You will need to configure your Docker daemon on each agent to point at
+the etcd cluster store, as seen in our [Manual Setup guide]
 (../calico-with-docker/docker-network-plugin/ManualSetup.md#docker).
 
 ## Install and set up Calico
 
 #### Install Calico on each agent
 
-To install Calico on each agent, run the following commands on each agent:
+To install Calico, run the following commands on each agent:
 
 ```
 wget https://github.com/projectcalico/calico-containers/releases/download/v0.17.0/calicoctl
@@ -135,31 +135,26 @@ the net parameter in the request.  For example:
 
 ```
 {
-    "id":"/calico-apps",
-    "apps": [
-        {
-            "id": "unified-docker-task",
-            "cmd": "ip addr && sleep 300",
+    "id": "unified-docker-task",
+        "cmd": "ip addr && sleep 300",
             "cpus": 0.1,
             "mem": 64.0,
             "container": {
                 "type": "DOCKER",
                 "docker": {
-                    "image": "busybox",
-                    "parameters": [
-                        {"key": "net", "value": "databases"}
-                    ]
-                }
-            }
+            "image": "busybox",
+            "parameters": [
+                {"key": "net", "value": "databases"}
+            ]
         }
-    ]
+    }
 }
 ```
 
 You can launch this JSON blob task by calling into the Marathon REST API
 with a command like the following:
 
-	curl -X PUT -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/groups/calico-apps @blob.json
+	curl -X POST -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/apps @blob.json
 
 
 
