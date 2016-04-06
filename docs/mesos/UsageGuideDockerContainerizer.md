@@ -135,7 +135,7 @@ the net parameter in the request.  For example:
 
 ```
 {
-    "id": "unified-docker-task",
+    "id": "docker-task",
         "cmd": "ip addr && sleep 300",
             "cpus": 0.1,
             "mem": 64.0,
@@ -154,7 +154,7 @@ the net parameter in the request.  For example:
 You can launch this JSON blob task by calling into the Marathon REST API
 with a command like the following:
 
-	curl -X POST -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/apps @blob.json
+	curl -X POST -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/apps -d @blob.json
 
 
 
