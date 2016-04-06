@@ -39,11 +39,12 @@ That's it! Your Mesos Cluster is ready to use!
 
 ## Next steps
 
-To view an interesting demo with a network policy visualizer,
-you can run through the [Calico Mesos Stars Demo](stars-demo/README.md).
+With your cluster deployed, you have everything in place to run the
+[Calico Mesos Stars Demo](stars-demo/README.md), an interesting network
+policy visualizer demo that shows how Calico can secure your cluster.
 
-To learn how to configure tasks using the Docker Containerizer with
-Calico networking, checkout out our [Docker Containerizer Usage Guide]
+To learn more generally how to configure tasks using the Docker Containerizer
+with Calico networking, check out our [Docker Containerizer Usage Guide]
 (./UsageGuideDockerContainerizer).
 
 ## Virtual Machines Info
@@ -51,23 +52,23 @@ Calico networking, checkout out our [Docker Containerizer Usage Guide]
 The install virtual machines will be running with the following config:
 
 ### Master
-All services on Master are installed .
+The master is installed with the following config and services:
  * **OS**: `Centos`
  * **Hostname**: `calico-mesos-01`
  * **IP**: `172.24.197.101`
  * **Running Services**:
    * `mesos-master` (RPM)
    * `docker`
+   * `etcd`
+   * `zookeeper`
+   * `marathon`
  * **Docker Containers**
-   * `etcd` (Docker)
-   * `zookeeper` (Docker)
-   * `marathon` (Docker)
-   * `marathon load balancer` (Docker)
+   * `marathon load balancer`
    * `calico-node`
    * `calico-libnetwork`
 
 ### Agents
-Mesos is installed with Netmodules using the Netmodules RPM bundle, and Calico is added and configured using the calico-mesos.rpm provided in this repository. Once both are installed, the agent will match the following specification:
+The agents are installed with the following config and services:
  * **OS**: `Centos`
  * **Hostnames**: `calico-mesos-02`, `calico-mesos-03`
  * **IP**: `172.24.197.102`, `172.24.197.103`

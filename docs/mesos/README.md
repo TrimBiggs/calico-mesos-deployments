@@ -21,13 +21,15 @@ network is associated with a single Calico profile.  Fine grained policy
 can be modified using the `calicoctl profile` commands.
 
 ### Unified Containerizer
-Calico with the Unified Containerizer utilizes [net-modules](https://github.com/mesosphere/net-modules)
-along with a [Calico-Mesos netmodules plugin](https://github.com/projectcalico/calico-mesos)
-to provide Calico networking.  Networks are specified as net-groups when
-launching a Mesos task.  A Calico profile is automatically created for 
-each net-group (if it doesn't already exist), defaulting to allow 
-communication between containers using the same net-group.  Fine grained
-policy can be modified using the `calicoctl profile` commands.
+Calico with the Unified Containerizer uses the [Calico Mesos plugin]
+(https://github.com/projectcalico/calico-mesos) to configure
+networking for a Mesos agent that is running [net-modules]
+(https://github.com/mesosphere/net-modules). Networks are
+specified as net-groups when launching a Mesos task.  A Calico
+profile is automatically created for each net-group (if it doesn't
+already exist), defaulting to allow communication between containers
+using the same net-group.  Fine grained policy can be modified using
+the `calicoctl profile` commands.
 
 ## Cluster Configuration Requirements
 The installation requirements to use Calico networking are different
@@ -53,7 +55,7 @@ version, upgrading if necessary.
 To build a new Mesos cluster with Calico networking, try one of the
 following guides:
 
-#### Quick-start guides:
+#### Quick Start a Sample Cluster:
 - [CentOS Vagrant guide](VagrantCentOS.md) will set up a Calico-ready
 Mesos cluster, including the Docker containerizer
 
