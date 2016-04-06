@@ -46,26 +46,15 @@ Each machine in the cluster must have access to these services.
 
 #### Set up Docker daemon to use etcd as a cluster store
 
-In order to run the Docker Containerizer, you will need to do the following
-on each agent:
-
--  Stop your Docker service
-	-  e.g. `systemctl stop docker` or `stop docker`
--  If you don’t already have at least Docker 1.9 then upgrade/install Docker
-   1.9 or higher.
--  Modify the docker daemon parameters to point at the etcd cluster, such as:
-	- Modify the Default Docker parameters file to include
-	  `DOCKER_OPTS="--cluster-store=etcd://<IP address>:4001"`
-    - Run docker daemon with `--cluster-store=etcd://<IP address>:4001`
--  Start your docker service.
-
-Be sure replace `<IP address>` with IP address of your etcd cluster.
+You will need to configure your Docker daemon on each agent to point at
+the etcd cluster store, as seen in our [Manual Setup guide]
+(../calico-with-docker/docker-network-plugin/ManualSetup.md#docker).
 
 ## Install and set up Calico
 
 #### Install Calico on each agent
 
-To install Calico on each agent, run the following commands on each agent:
+To install Calico, run the following commands on each agent:
 
 ```
 wget https://github.com/projectcalico/calico-containers/releases/download/v0.17.0/calicoctl
@@ -84,14 +73,8 @@ allowed traffic in and out of containers assigned to that network.  The rules
 are encapsulated in a Calico "profile".  Each Docker network is assigned its 
 own Calico profile.
 
-#### Create a Docker network
-
 To create a Docker network using Calico, run the `docker network create`
 command specifying "calico" as both the network and IPAM driver.
-
-For example, suppose we want to provide network policy for a set of database
-containers.  We can create a network called `databases` with the the following
-command:
 
 ```
 docker network create --driver calico --ipam-driver calico databases 
@@ -120,45 +103,9 @@ traffic only from containers attached the "databases" network.
 > Note that when managing profiles created by the Calico network driver, the
 > profile tag and network name can be regarded as the same thing.
 
-#### Configuring the network policy
-
-Calico has a rich set of policy rules that can be leveraged.  Rules can be
-created to allow and disallow packets based on a variety of parameters such
-as source and destination CIDR, port and tag.
-
-The `calicoctl profile <profile> rule add` and `calicoctl profile <profile> rule remove`
-commands can be used to add and remove rules in the profile.
-  
-As an example, suppose the databases network represents a group of MySQL
-databases which should allow TCP traffic to port 3306 from "application" 
-containers.
-
-To achieve that, create a second network called "applications" which the
-application containers will be attached to.  Then, modify the network policy of
-the databases to allow the appropriate inbound traffic from the applications.
-
-```
-$ docker network create --driver calico --ipam-driver calico applications
-$ calicoctl profile databases rule add inbound allow tcp from tag applications to ports 3306
-```
-
-The second command adds a new rule to the databases network policy that allows
-inbound TCP traffic from the applications.
-
-You can view the updated network policy of the databases to show the newly
-added rule:
-
-```
-$ calicoctl profile databases rule show
-Inbound rules:
-   1 allow from tag databases
-   2 allow tcp from tag applications to ports 3306
-Outbound rules:
-   1 allow
-```
-
-For more details on the syntax of the rules, run `calicoctl profile --help` to
-display the valid profile commands.
+For more information no how to configure your Calico profiles, check out
+the section on [Configuring the network policy in our Advanced Policy guide]
+(../calico-with-docker/docker-network-plugin/AdvancedPolicy.md#configuring-the-network-policy).
 
 ## Launching Containers
 
@@ -188,69 +135,27 @@ the net parameter in the request.  For example:
 
 ```
 {
-    "id":"/calico-apps",
-    "apps": [
-        {
-            "id": "unified-docker-task",
-            "cmd": "ip addr && sleep 300",
+    "id": "docker-task",
+        "cmd": "ip addr && sleep 300",
             "cpus": 0.1,
             "mem": 64.0,
             "container": {
                 "type": "DOCKER",
                 "docker": {
-                    "image": "busybox",
-                    "parameters": [
-                        {"key": "net", "value": "databases"}
-                    ]
-                }
-            }
+            "image": "busybox",
+            "parameters": [
+                {"key": "net", "value": "databases"}
+            ]
         }
-    ]
+    }
 }
 ```
 
 You can launch this JSON blob task by calling into the Marathon REST API
 with a command like the following:
 
-	curl -X PUT -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/groups/calico-apps @blob.json
+	curl -X POST -H "Content-Type: application/json" http://<MARATHON_IP>:8080/v2/apps -d @blob.json
 
-## Additional Options (Optional)
-
-
-#### Configure your IP pools
-
-By default, Calico creates an IP pool with CIDR 192.168.0.0/16.  The Calico 
-IPAM module will assign IP addresses to your containers from that range of IP 
-addresses.
-
-If you want to allocate from different CIDRs you can use the 
-`calicoctl pool remove` and `calicoctl pool add` commands to modify the 
-available pools.  For example, to change the pool from 192.168.0.0/16 to be 
-172.168.0.0/16 run the following to remove the original pool and create a new
-one: 
-
-```
-calicoctl pool remove 192.168.0.0/16
-calicoctl pool add 172.168.0.0/16
-```
-
-You can view the configured pools using the `calicoctl pool show` command.  e.g.
-
-```
-$ ./calicoctl pool show
-+----------------+---------+
-|   IPv4 CIDR    | Options |
-+----------------+---------+
-| 172.168.0.0/16 |         |
-+----------------+---------+
-+--------------------------+---------+
-|        IPv6 CIDR         | Options |
-+--------------------------+---------+
-| fd80:24e2:f998:72d6::/64 |         |
-+--------------------------+---------+
-```
-
-TODO: Include Load balancer information here.
 
 
 [![Analytics](https://calico-ga-beacon.appspot.com/UA-52125893-3/calico-mesos-deployments/docs/CalicoWithTheDockerContainerizer.md?pixel)](https://github.com/igrigorik/ga-beacon)

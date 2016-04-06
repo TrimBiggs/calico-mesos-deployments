@@ -1,146 +1,114 @@
 <!--- master only -->
-> ![warning](../../images/warning.png) This document applies to the HEAD of the calico-containers source tree.
+> ![warning](images/warning.png) This document applies to the HEAD of the calico-mesos-deployments source tree.
 >
-> View the calico-containers documentation for the latest release [here](https://github.com/projectcalico/calico-containers/blob/v0.17.0/README.md).
+> View the calico-mesos-deployments documentation for the latest release [here](https://github.com/projectcalico/calico-mesos-deployments/blob/0.27.0%2B2/README.md).
 <!--- else
-> You are viewing the calico-containers documentation for release **release**.
+> You are viewing the calico-mesos-deployments documentation for release **release**.
 <!--- end of master only -->
 
-# Deploying Calico and Mesos using Vagrant and VirtualBox
+# Vagrant Deployed Mesos Cluster with Calico
+This guide will start a running Mesos cluster (master and two agents) with Calico Networking using a simple `vagrant up`.
+These machines will be configured to use the Docker containerizer for launching tasks.
 
-These instructions allow you to set up a Mesos cluster with [Calico networking][calico-networking]
-using Vagrant.  The Vagrant script installs and configures the necessary
-components for running both Docker Containerizer and Unified Containerizer
-tasks using Calico networking.  The Vagrant file contains all of the 
-configuration steps described in the [Installing Mesos with Calico: Docker Containerizer](RPMInstallDocker.md)
-and [Installing Mesos with Calico: Unified Containerizer](RPMInstallUnified.md) guides.
+> NOTE: The vagrant script and guide do not currently support the Unified Containerizer.
+> This guide should only be used in conjunction with the Docker Containerizer.
 
-*** SAY WHAT THIS GUIDE INSTALLS ***
+## Prerequisites
+This guide requires a host machine with:
 
-## 1. Deploy cluster using Vagrant
+ * [VirtualBox][virtualbox] to host the virtual machines.
+ * [Vagrant][vagrant] to install and configure the machines in Virtual Box.
+ * [Git](git-scm.com)
 
-### 1.1 Install dependencies
+## Getting Started
+1. First, clone this repository and change to the Mesos vagrant directory:
 
-* [VirtualBox][virtualbox] 5.0.0 or greater.
-* [Vagrant][vagrant] 1.7.4 or greater.
-* [Git][git]
+  ```
+  git clone https://github.com/projectcalico/calico-containers.git
+  cd calico-containers/docs/mesos/vagrant-centos
+  ```
 
-<!--- master only -->
-### 1.2 Clone this project
+2. Then launch the Vagrant demo:
+  ```
+  vagrant up
+  ```
 
-    git clone https://github.com/projectcalico/calico-containers.git
-<!--- else
-### 1.2 Clone this project, and checkout the **release** release
+That's it! Your Mesos Cluster is ready to use!
 
-    git clone https://github.com/projectcalico/calico-containers.git
-    git checkout tags/**release**
-<!--- end of master only -->
+## Log in to Vagrant machines
 
-### 1.3 Startup and SSH
+To connect to your servers:
 
-Change into the directory for this guide:
+####Linux/Mac OS X
+Run:
 
-    cd calico-containers/docs/mesos/vagrant-centos
+	vagrant ssh <hostname>
 
-Run
+####Windows
+Follow instructions from https://github.com/nickryand/vagrant-multi-putty.
 
-    vagrant up
+Then, run:
 
-> *Note*: This will deploy a Kubernetes master and a single Kubernetes node.  To run more nodes, modify the value `num_instances` in the Vagrantfile before running `vagrant up`.
+	vagrant putty <hostname>
 
-To connect to your servers
-* Linux/Mac OS X
-    * run `vagrant ssh <hostname>`
-* Windows
-    * Follow instructions from https://github.com/nickryand/vagrant-multi-putty
-    * run `vagrant putty <hostname>`
+## Next steps
 
-### 1.4 Verify environment
+With your cluster deployed, you have everything in place to run the
+[Calico Mesos Stars Demo](stars-demo/README.md), an interesting network
+policy visualizer demo that shows how Calico can secure your cluster.
 
-You should now have two CoreOS servers - one Kubernetes master and one Kubernetes node. The servers are named calico-01 and calico-02
-and have IP addresses 172.18.18.101 and 172.18.18.102.
+To learn more generally how to configure tasks using the Docker Containerizer
+with Calico networking, check out our [Docker Containerizer Usage Guide]
+(./UsageGuideDockerContainerizer).
 
-At this point, it's worth checking that your servers can ping each other.
+## Virtual Machines Info
 
-From calico-01
+The install virtual machines will be running with the following config:
 
-    ping 172.18.18.102
-
-From calico-02
-
-    ping 172.18.18.101
-
-If you see ping failures, the likely culprit is a problem with the VirtualBox network between the VMs.  You should
-check that each host is connected to the same virtual network adapter in VirtualBox and rebooting the host may also
-help.  Remember to shut down the VMs with `vagrant halt` before you reboot.
-
-You should also verify each host can access etcd.  The following will return an error if etcd is not available.
-
-    curl -L http://172.18.18.101:2379/version
-
-And finally check that Docker is running on both hosts by running
-
-    docker ps
-
-## 2. Using your cluster
-### 2.1 Deploy Calico Policy Agent
-The Calico Policy Agent enables network policy on Kubenrnetes.
-
-To install it:
-
-Log on to the master.
 ```
-vagrant ssh calico-01
+.-----------------------------------------------------------------------------------.
+| Machine Type | OS     | Hostname        | IP Address     | Services               |
+|--------------|--------|-----------------|----------------|------------------------|
+| Master       | Centos | calico-mesos-01 | 172.24.197.101 | mesos-master           |
+|              |        |                 |                | etcd                   |
+|              |        |                 |                | docker                 |
+|              |        |                 |                | zookeeper              |
+|              |        |                 |                | marathon               |
+|              |        |                 |                | marathon load-balancer |
+|              |        |                 |                | calico-node            |
+|              |        |                 |                | calico-libnetwork      |
+|--------------|--------|-----------------|----------------|------------------------|
+| Agents       | Centos | calico-mesos-02 | 172.24.197.102 | mesos-agent            |
+|              |        | calico-mesos-03 | 172.24.197.103 | docker                 |
+|              |        |                 |                | calico-node            |
+|              |        |                 |                | calico-libnetwork      |
+'-----------------------------------------------------------------------------------'
 ```
 
-Create the agent.
-```
-kubectl create -f calico-policy-services.yaml
-```
+Note that Calico is installed on the Agents so that tasks are automatically
+networked by Calico.  Calico is also installed on the Master to provide an IP
+address to the Marathon load-balancer, which is used in the stars demo.
 
-### 2.2 Deploying SkyDNS
-You now have a basic Kubernetes cluster deployed using Calico networking.  Most Kubernetes deployments use SkyDNS for Kubernetes service discovery.  The following steps configure the SkyDNS service.
+## Adding More Agents (Optional)
+You can modify the script to use multiple agents. To do this, modify the `num_instances`
+variable in the `Vagrantfile`.  The variable is set to `3`, where the first machine is the
+master and every other machine is an agent.  If you'd like four agents, set `num_instances`
+to be `5`.
 
-Log on to the master node.
-```
-vagrant ssh calico-01
-```
+Every agent instance will take similar form to the agent instances in the table above.
 
-Deploy the SkyDNS application using the provided Kubernetes manifest.
-```
-kubectl create -f skydns.yaml
-```
+The `hostname` and `IP address` of the machines are generated in the vagrant script,
+so additional machines will take these values in the form:
 
-Check that the DNS pod is running. It may take up to two minutes for the pod to start, after which the following command should show the `kube-dns-v9-xxxx` pod in `Running` state.
-```
-kubectl get pods --namespace=kube-system
-```
-> Note: The kube-dns-v9 pod is deployed in the `kube-system` namespace.  As such, we we must include the `--namespace=kube-system` option when using kubectl.
+	Hostname:   `calico-mesos-0X`
+	IP address: `172.24.197.10X`
 
->The output of the above command should resemble the following table.  Note the `Running` status:
-```
-NAMESPACE     NAME                READY     STATUS    RESTARTS   AGE
-kube-system   kube-dns-v9-3o2rw   4/4       Running   0          2m
-```
+where `X` is the instance number.
 
-Check that the DNS pod has been networked using Calico.  You should see a Calico endpoint created for the DNS pod.
-```
-calicoctl endpoint show --detailed
-```
+If you've already run the vagrant script but want to add more Agents, just
+change the `num_instances` variable then run `vagrant up` again.  Your
+existing VMs will remain installed and ready.
 
-### 2.3 Next Steps
-Try deploying an application to the cluster.
-- [Calico Policy Demo](stars-demo/README.md)
-- [Kubernetes guestbook](vagrant-coreos/guestbook.md)
-
-You can also take a look at the various Kubernetes [example applications][examples].
-
-[calico-networking]: https://github.com/projectcalico/calico-containers
-[calico-cni]: https://github.com/projectcalico/calico-cni
 [virtualbox]: https://www.virtualbox.org/
-[vagrant]: https://www.vagrantup.com/downloads.html
-[using-coreos]: http://coreos.com/docs/using-coreos/
-[git]: http://git-scm.com/
-[examples]: https://github.com/kubernetes/kubernetes/tree/master/examples
-
-[![Analytics](https://calico-ga-beacon.appspot.com/UA-52125893-3/calico-containers/docs/cni/kubernetes/VagrantCoreOS.md?pixel)](https://github.com/igrigorik/ga-beacon)
+[vagrant]: https://www.vagrantup.com/
+[![Analytics](https://calico-ga-beacon.appspot.com/UA-52125893-3/calico-containers/docs/mesos/DockerizedVagrant.md?pixel)](https://github.com/igrigorik/ga-beacon)
