@@ -24,19 +24,25 @@ Mesos-master, zookeeper, and marathon are installed from the official Mesos repo
 
 ## ZooKeeper
 Install Mesos' datastore - ZooKeeper:
+
 ```
 yum install -y zookeeper
 systemctl start zookeeper
 ```
 
 ZooKeeper uses tcp over port 2181. If you're using a firewall, open this port:
+
 ```
 sudo firewall-cmd --zone=public --add-port=2181/tcp --permanent
 sudo systemctl restart firewalld
 ```
 
 ## Mesos Master
+Supported Versions: `0.28` (recommended, required for Docker Containerizer),
+`v0.27`, `v0.26.0` (deprecated)
+
 With Zookeeper up and running, we can launch our mesos-master process. Run the following commands, replacing `$IP` with the cluster-accessible IP you would like Master to bind to:
+
 ```
 yum install -y mesos
 echo $IP > /etc/mesos-master/hostname
@@ -45,13 +51,17 @@ systemctl start mesos-master
 ```
 
 ## Marathon
+Supported Versions: `v1.0.0` (recommended), `v0.14.0-v0.14.2`
+
 Once mesos-master is running, we can launch Marathon:
+
 ```
 sudo yum install -y marathon
 systemctl start marathon
 ```
 
 Marathon listens for tcp connections on port 8080. Open this port on your firewall:
+
 ```
 sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
 sudo systemctl restart firewalld
@@ -59,6 +69,7 @@ sudo systemctl restart firewalld
 
 ## etcd
 Calico uses etcd as its data store and communication mechanism among Calico components. Install it from Centos' repositories with the following command, replacing `$IP` with the cluster-accessible IP you would like etcd to bind to:
+
 ```
 yum install -y etcd
 echo ETCD_LISTEN_CLIENT_URLS=\"http://0.0.0.0:2379\" >> /etc/etcd/etcd.conf
@@ -67,6 +78,7 @@ systemctl start etcd.service
 ```
 
 Etcd listens for tcp connections on ports 2379. Open these ports on your firewall:
+
 ```
 sudo firewall-cmd --zone=public --add-port=2379/tcp --permanent
 sudo systemctl restart firewalld

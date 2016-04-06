@@ -6,21 +6,26 @@
 > You are viewing the calico-docker documentation for release **release**.
 <!--- end of master only -->
 
-## TODO: Copied from Kube.  Delete or add meaningful info (just delete for now I think...)
+# Troubleshooting Calico with Mesos
+This article contains Mesos specific troubleshooting advice for Calico.  See also the [main Calico troubleshooting](../../Troubleshooting.md) guide.
 
-# Troubleshooting
-This article contains Kubernetes specific troubleshooting advice for Calico.  See also the [main Calico troubleshooting](../../Troubleshooting.md) guide.
+## Test Cluster Health
+Before you start launching tasks with Marathon, we suggest running the
+Calico-Mesos Test Framework. This Framework will register with mesos directly
+and launch ping and sleep tasks across your mesos cluster, verifiying netgroup
+enforcement and network connectivity between tasks.
 
-## Viewing Logs
-The Calico CNI plugin emits logs to the `/var/log/calico/cni/` directory.  All CNI plugin logs for a node will be emitted to
-that directory.  Searching for logs with "ERROR" or "WARN" level is a good place to start if you are having trouble. 
+To launch the framework, run the following docker command from any host that can communicate with your master (we recommend simply running it directly on the master itself):
 
-The log level can be configured via the CNI network configuration file, by changing the value of the key `log_level`.
-By default, the plugin will only emit "info" level and higher.  Valid log levels are `debug`, `info`, `warn`, and
-`error`.
+	docker run --net=host calico/calico-mesos-framework <MASTER_IP>:5050
 
-It may also be useful in some situations to check the kubelet logs for a given node.  For deployments using `systemd`,
-you can do this via `journalctl`.
+- Some tests require multiple hosts to ensure cross-host communication, and
+may fail unless you are running 2+ agents.
+- Additionally, if running your cluster in the public cloud, cross-host tests
+will fail unless you [Enable IP over IP]
+(https://github.com/projectcalico/calico-containers/blob/master/docs/FAQ.md#can-i-run-calico-in-a-public-cloud-environment)
+
+Be sure to contact us on [Slack][calico-slack] if your tests are still not passing!
 
 
 [![Analytics](https://calico-ga-beacon.appspot.com/UA-52125893-3/calico-containers/docs/cni/kubernetes/Troubleshooting.md?pixel)](https://github.com/igrigorik/ga-beacon)
