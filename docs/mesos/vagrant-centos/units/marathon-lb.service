@@ -11,7 +11,8 @@ ExecStart=/usr/bin/docker run --name marathon-lb \
 	--privileged \
 	--net=host \
 	-e PORTS=9090 \
-	djosborne/marathon-lb sse --marathon http://${MARATHON_IP}:8080 --group external
+	robbrockbank/marathon-lb:ip-per-task sse --marathon http://${MARATHON_IP}:8080 --group external \
+	--min-serv-port-ip-per-task 20001 --max-serv-port-ip-per-task 29999
 
 [Install]
 WantedBy=multi-user.target
