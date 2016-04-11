@@ -53,7 +53,7 @@ the network.  We will use the Marathon load balancer to access the Stars UI
 using port mapping from the host to the Management UI container.
 
 ## Getting Started
-### Prep:
+### Preparation
 On each agent, pull the Docker image `djosborne/star:v0.5.0` to speed up the
 Marathon install once the tasks start.
 
@@ -111,30 +111,38 @@ Here's a sample blob of what the Management UI task looks like as JSON.
         "cmd": "star-probe --urls=http://frontend.calico-stars.marathon.mesos:9000/status,http://backend.calico-stars.marathon.mesos:9000/status",
         "cpus": 0.1,
         "mem": 64.0,
+        "ipAddress": {
+          "discovery": {
+            "ports": [{ "number": 9001, "name": "http", "protocol": "tcp" }]
+          }
+        },
         "container": {
           "type": "DOCKER"
           "docker": {
-            "portMappings":[{"containerPort": 9001, "servicePort": 10000}],
             "image": "mesosphere/star:v0.3.0",
             "parameters": [
               { "key": "net", "management-ui" },
               { "key": "ip", "value": "192.168.255.254" }
             ]
           }
+        },
+        "labels":{
+          "HAPROXY_GROUP": "external",
+          "HAPROXY_0_VHOST": "my.marathon.app"
         }
       }
   ]
 }
 ```
 
-Note the `parameters` field which specifies:
+There are a few things of note here:
 
-- The Docker network to join
-- A specific IP address from the Calico Pool to set as the Management UI IP
-
-Also note the `portMappings` field, which maps the Management UI's port 9001 to
-the port 10000 of the host containing the Marathon load balancer.  For this
-demo, this means that `http://172.24.197.101:100000` maps to `http://192.168.255.254:9001`.
+- The `discovery` field, which opens port 9001 over tcp to be discovered by the Marathon load-balancer.
+- The `parameters` field, which specifies:
+	- The Docker network to join
+	- A specific IP address from the Calico Pool to set as the Management UI IP `192.168.255.254`
+- The `labels` field, which passes the virtual hostname label `my.marathon.app` to the load-balancer to map this name to the `management-ui` webpage, `192.168.255.254:9001`.
+	- Now, if you to set a `hostname` mapping of `my.marathon.app` to point at the load-balancer host's IP address, you will be able to access the `management-ui` by visiting that hostname.
 
 ##### Start a Task
 To speed things up, we'll use the prefilled [stars.json](./stars.json) file
@@ -161,13 +169,18 @@ Now that we have configured our Marathon tasks, let's view the Stars UI.
 #### View the Stars UI from a Browser
 As mentioned above, the Stars Management UI container JSON passes a port mapping
 to the Marathon load balancer when creating the container.  Since the load balancer
-is running on Mesos Master, you can access the UI's port 9001 by visiting port
-10000 on the Master.
+is running on Mesos Master, you can access the UI's port 9001 from your machine by
+adding an entry to your host table called `my.marathon.app`, which points to the
+Mesos Master IP (the `marathon-lb` host).
+
+On Linux and OSX machines, you would do this by editing `/etc/hosts` and adding:
+
+	my.marathon.app  172.24.197.101
 
 Before we configure Calico policy for the UI, let's ***try*** to access
 the webpage on Master from a machine that can reach the Master IP:
 
-	http://172.24.197.101:10000
+	http://my.marathon.app
 
 Our connection is refused since the default behavior of a Calico profile
 is to only allow inbound traffic from nodes with the same profile
@@ -212,25 +225,25 @@ calicoctl profile frontend rule add inbound allow tcp from tag management-ui to 
 
 Lets try the webpage again:
 
-	http://172.24.197.101:10000
+	http://my.marathon.app
 
-The nodes are viewable! Now its time to configure sensible network policy
-between the services in our cluster.
+The nodes are viewable! Now it's time to configure sensible network policy
+between the services in our cluster so that certain networks can talk to others.
 
 #### Configure Additional Policy
 Lets add some policies to make the following statements true:
 
 **The frontend services should respond to requests from clients:**
 
-	calicoctl profile frontend rule add inbound allow tcp from tag client to port 9001
+	calicoctl profile frontend rule add inbound allow tcp from tag client to ports 9001
 
 **The backend services should respond to requests from the frontend:**
 
-	calicoctl profile backend rule add inbound allow tcp from tag frontend to port 9001
+	calicoctl profile backend rule add inbound allow tcp from tag frontend to ports 9001
 
 Lets see what our cluster looks like now:
 
-	http://172.24.197.101:10000
+	http://my.marathon.app
 
 Hooray! You've configured policy with Calico to allow certain networks to access
 other networks in your cluster!
